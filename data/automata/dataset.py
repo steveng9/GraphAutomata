@@ -78,6 +78,7 @@ class CellularAutomataDataset(InMemoryDataset):
                     rule_number=rule_number,
                     label_map=self.label_map,
                     undirected=self.config.undirected,
+                    mode=self.config.graph_mode,
                 )
                 data_list.append(data)
 
@@ -93,4 +94,4 @@ class CellularAutomataDataset(InMemoryDataset):
 
     @property
     def num_node_features(self) -> int:
-        return 3  # [state, w_norm, t_norm]
+        return 1 if self.config.graph_mode == "topological" else 3

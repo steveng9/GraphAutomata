@@ -31,6 +31,7 @@ class AutomataConfig:
     timesteps: int = 30
     init: str = "random"            # random | center
     undirected: bool = True
+    graph_mode: str = "standard"    # standard | topological
 
     def config_hash(self) -> str:
         """Stable string representation used to name the processed cache file."""
@@ -42,4 +43,5 @@ class AutomataConfig:
             f"_t{self.timesteps}"
             f"_init{self.init}"
             f"_{'undir' if self.undirected else 'dir'}"
+            f"_{self.graph_mode}"
         )

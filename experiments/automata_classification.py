@@ -64,6 +64,8 @@ def main():
     parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument("--graph_mode", default="standard", choices=["standard", "topological"],
+                        help="standard: node features=[state,w,t]; topological: uniform nodes, edges only to 'on' cells")
     parser.add_argument("--cache_dir", default="data/automata/cache")
     args = parser.parse_args()
 
@@ -76,6 +78,7 @@ def main():
         num_samples_per_rule=args.samples,
         width=args.width,
         timesteps=args.timesteps,
+        graph_mode=args.graph_mode,
     )
     print(f"Loading/generating dataset (config hash: {ca_config.config_hash()}) ...")
     dataset = CellularAutomataDataset(root=args.cache_dir, config=ca_config, seed=args.seed)

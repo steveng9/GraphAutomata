@@ -1,0 +1,55 @@
+---                                                                                       
+  What was implemented                                                                         
+                                                                                             
+  29 Python files across the full project structure, all passing syntax checks.                
+                                                                                               
+  Phase 1 — Data Foundation                                                                    
+                                                                                               
+  - requirements.txt — pinned deps (torch, torch-geometric, ogb, numpy, sklearn, tqdm)         
+  - utils/seed.py — global seed setter (torch, numpy, random, cudnn)                           
+  - utils/config.py — ModelConfig, TrainingConfig, AutomataConfig dataclasses with a           
+  config-hash for cache naming                                                                 
+  - data/automata/generator.py — pure NumPy CA engine (apply_rule, run_automaton, zero-pad     
+  boundaries, INTERESTING_RULES)                                                               
+  - data/automata/graph_builder.py — CA grid → PyG Data (row-major node IDs, 3D features,      
+  directed edges optionally symmetrised)
+  - data/automata/dataset.py — CellularAutomataDataset(InMemoryDataset) with config-hash cache
+  invalidation
+
+  Phase 2 — First Experiment
+
+  - models/base.py — abstract GNNBase(in, hidden, out, layers, dropout, task)
+  - models/gcn.py — scratch GCNConv (symmetric norm, isolated-node masking) + GCN
+  - training/losses.py — factory: BCE for binary tasks, CE for multi-class
+  - training/evaluator.py — AutomataEvaluator mirroring OGB interface; ogb_metric_name()
+  - training/trainer.py — Trainer with train_epoch, eval_epoch, fit (early stopping)
+  - experiments/automata_classification.py — full CLI for CA classification
+
+  Phase 3 — Remaining Models
+
+  - models/graphsage.py — scratch SAGEConv (mean aggr, lin_self + lin_neigh, no self-loops,
+  L2-norm)
+  - models/gin.py — scratch GINConv (add aggr, learned ε, BN inside MLP) + multi-layer readout
+  - models/gat.py — scratch GATConv (multi-head softmax attention, concat/mean heads) + GAT
+  - models/__init__.py — MODEL_REGISTRY dict
+
+  Phase 4 — OGB Integration
+
+  - data/ogb/graph_classification.py — molhiv loader
+  - data/ogb/node_classification.py — arxiv loader with NeighborLoader
+  - data/ogb/link_prediction.py — collab loader
+  - experiments/molhiv_classification.py, arxiv_node_clf.py, collab_link_pred.py
+
+  Phase 5 — Polish
+
+  - utils/logging.py — structured logging helpers
+  - main.py — CLI dispatcher routing to experiments
+
+  ---
+  Before running, install dependencies:
+  pip install -r requirements.txt
+
+  Verification command (Phase 2 check):
+  python experiments/automata_classification.py --model gcn --rules 30 90 --samples 100
+  --epochs 20
+
